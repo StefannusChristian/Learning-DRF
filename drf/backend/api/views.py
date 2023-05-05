@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from products.serializers import ProductSerializer
 
-@api_view(["GET"])
+@api_view(["POST","GET"])
 def api_home(request, *args, **kwargs):
     # <-- GET ECHO DATA SECTION -->
     # body = request.body # byte string of JSON Data
@@ -23,6 +23,12 @@ def api_home(request, *args, **kwargs):
     """
     DRF API VIEW
     """
+    serializer = ProductSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        data = serializer.save()
+        print(data)
+        return Response(serializer.data)
+    return Response({"invalid":"not good data"},status=400)
 
     # <-- Django Model Instance as API Response -->
     instance = Product.objects.all().order_by("?").first()
